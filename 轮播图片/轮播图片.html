@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+
+<head>
+    <meta charset="UTF-8">
+    <title>轮播图片</title>
+    <script src="https://cdn.bootcss.com/angular.js/1.6.4/angular.min.js"></script>
+    <style type="text/css">
+    html,
+    body {
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+    }
+    
+    div {
+        margin: 0 auto;
+        width: 30%;
+        height: 30%;
+    }
+    
+    div>img {
+        width: 100%;
+    }
+    </style>
+</head>
+
+<body>
+    <div>
+        <h1>使用指令封装一个轮播图片的功能</h1>
+        <lunbo pic-array="'风景_01.jpg','风景_02.jpg','风景_03.jpg','风景_04.jpg'" interval-time="1"></lunbo>
+    </div>
+    <script type="text/javascript">
+    //通过指令实现图片轮播效果，这里采用controller来接受轮播的图片数组
+    angular.module("myApp", []).directive("lunbo", function($interval) {
+        return {
+            restrict: "EACM",
+            replace: true,
+            scope: {
+                picArray: "@", // 指定的轮播图片数组
+                single: "@", //  用于绑定单个图片的参数
+                intervalTime: "@", //指定的轮播秒数
+                animate: "@"
+            },
+            template: "<img src=\"{{single}}\"  >",
+            controller: function($scope) {
+                console.log($scope.animate)
+                    //上面的pic-arrary写的逗号隔开的字符串，每个字符串都带了单引号，下面去掉一下
+                var array = $scope.picArray.split(",").map(function(x) {
+                    return x.substr(1, x.length - 2)
+                })
+                var n = 1;
+                $interval(function() {
+                    $scope.single = array[n - 1];
+                    n = 1 + n % array.length;
+                }, $scope.intervalTime * 1000);
+            }
+        }
+    })
+    </script>
+</body>
+
+</html>

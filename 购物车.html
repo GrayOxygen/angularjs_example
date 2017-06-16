@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>购物车练习</title>
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<style type="text/css">
+html,
+body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.container {
+    margin: 0 auto;
+}
+</style>
+
+<body ng-app="app">
+    <div class="container" ng-controller="cartController">
+        <table class="table" ng-show="carts.length">
+            <caption>
+                <h1>购物车</h1></caption>
+            <thead>
+                <tr>
+                    <th>产品编号</th>
+                    <th>产品名称</th>
+                    <th>购买数量</th>
+                    <th>产品单价</th>
+                    <th>产品总价</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="active" ng-repeat="item in carts">
+                    <td>{{item.id}}</td>
+                    <td>{{item.name}}</td>
+                    <td>
+                        <button type="button" class="btn btn-default" ng-click="addNum(item.id)">+</button>
+                        <input type="text" name="" ng-model="item.num">
+                        <button type="button" class="btn btn-default" ng-click="reduceNum(item.id)">-</button>
+                    </td>
+                    <td>{{item.unitPrice}}</td>
+                    <td>{{item.num*item.unitPrice}}</td>
+                    <td>
+                        <button type="button" class="btn btn-default" ng-click="removeItem(item.id)">移除</button>
+                    </td>
+                </tr>
+            </tbody>
+            <tr>
+                <td></td>
+                <td></td>
+                <td>商品总数：{{countTotalNum()}}</td>
+                <td></td>
+                <td>总金额: {{countTotalPrice()}}</td>
+                <td>
+                    <button type="button" class="btn btn-default" ng-click="carts={}">清空购物车</button>
+                </td>
+            </tr>
+        </table>
+        <p ng-show="!carts.length">您的购物车当前为空</p>
+    </div>
+</body>
+<script src="https://cdn.bootcss.com/angular.js/1.6.4/angular.min.js"></script>
+<script type="text/javascript">
+angular.module("app", []).controller("cartController", ["$scope", function($scope) {
+    console.log($scope)
+    $scope.carts = [{
+        id: "1",
+        name: "哲学入门书籍套装",
+        num: 1,
+        unitPrice: 100
+    }, {
+        id: "2",
+        name: "现代诗歌精选集",
+        num: 2,
+        unitPrice: 150
+    }, {
+        id: "3",
+        name: "牛奶",
+        num: 10,
+        unitPrice: 10
+    }, {
+        id: "4",
+        name: "签字笔",
+        num: 20,
+        unitPrice: 30
+    }, {
+        id: "5",
+        name: "一包A4纸",
+        num: 30,
+        unitPrice: 50
+    }, {
+        id: "6",
+        name: "照相机",
+        num: 1,
+        unitPrice: 5000
+    }, {
+        id: "7",
+        name: "苹果电脑Mac Pro",
+        num: 1,
+        unitPrice: 12000
+    }, {
+        id: "8",
+        name: "华为手机",
+        num: 1,
+        unitPrice: 1000
+    }, {
+        id: "9",
+        name: "干果",
+        num: 10,
+        unitPrice: 100
+    }];
+
+    //总价计算
+    $scope.countTotalPrice = function() {
+            var total = 0;
+            angular.forEach($scope.carts, function(item) {
+                total += item.num * item.unitPrice;
+            });
+            return total;
+        }
+        //总数量计算
+    $scope.countTotalNum = function() {
+            var total = 0;
+            angular.forEach($scope.carts, function(item) {
+                total += item.num;
+            })
+            return total;
+        }
+        //  移除一条商品
+    $scope.removeItem = function(id) {
+            var index = findIndex(id);
+            if (index != -1) {
+                $scope.carts.splice(index, 1);
+            }
+            //ng开头的指令执行完，会进行脏检查
+        }
+        //增加商品数量
+    $scope.addNum = function(id) {
+            var index = findIndex(id);
+            if (index != -1) {
+                ++$scope.carts[index].num;
+            }
+        }
+        //减少商品数量
+    $scope.reduceNum = function(id) {
+        var index = findIndex(id);
+        if (index != -1) {
+
+            if ($scope.carts[index].num > 1) {
+                --$scope.carts[index].num;
+            } else {
+                var confirmKey = confirm("确定移除该商品吗？");
+                if (confirmKey) {
+                    $scope.carts.splice(index, 1);
+                }
+            }
+        }
+    }
+
+    //监听改变事件
+    $scope.$watch('carts', function(newvalue, oldvalue) {
+        angular.forEach(newvalue, function(item, key) {
+            //直接输入一个-就提示了  TODO
+            if (item.num < 1) {
+                console.log(item)
+                var confirmKey = confirm("确定移除该商品吗？");
+                if (confirmKey) {
+                    $scope.carts.splice(key, 1);
+                } else {
+                    item.num = oldvalue[key].num;
+                }
+
+
+            }
+        })
+    }, true /*carts的所有属性中，任有一个变化就会监听到*/ );
+
+    //根据id获取index
+    var findIndex = function(id) {
+        var index = -1;
+        angular.forEach($scope.carts, function(item, key) {
+            if (item.id === id) {
+                index = key;
+                return;
+            }
+        })
+        return index;
+    }
+}])
+</script>
+
+</html>

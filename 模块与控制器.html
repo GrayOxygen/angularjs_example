@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp">
+
+<head>
+    <meta charset="UTF-8">
+    <title>模块与控制器</title>
+</head>
+
+<body>
+    <h1>一个只有一个ng-app</h1>
+    <div>
+        $provide 服务 $provider方法 factory方法 service方法
+        <div ng-controller="firstController">
+            {{name}}
+        </div>
+    </div>
+    <div>通过服务实现controller的数据共享
+        <div ng-controller="siblingController1">
+            <input type="text" name="" ng-model="Data.name"> {{Data.name}}
+        </div>
+        <div ng-controller="siblingController2">
+            <input type="text" name="" ng-model="Data.name"> {{Data.name}}
+        </div>
+    </div>
+</body>
+<script src="https://cdn.bootcss.com/angular.js/1.6.4/angular.min.js"></script>
+<script type="text/javascript">
+var myApp = angular.module("myApp", [], function($provide) { //配置
+    console.log(1)
+        //自定义服务，一般不这么写
+    $provide.provider("CustomService", function() {
+        //公用的接口，用于angular调用，实现依赖注入
+        this.$get = function() {
+
+            return {
+                message: "Hello World!服务！"
+            }
+        }
+    })
+
+    //两个快捷方法 同 myApp.factory()和myApp.service()
+    //自定义工厂
+    $provide.factory("CustomService2", function() {
+        return [1, 2, 3, 4]
+    })
+
+    //自定义服务，必须返回引用对象，不能是基本类型
+    $provide.service("CustomService2", function() {
+        return [1, 2, 3, 4] //"123"
+    })
+
+}).factory("Data", function() {
+    return {
+        name: "前端开发人员"
+    }
+}).controller("firstController", ["$scope", "CustomService", "CustomService2", function($scope, CustomService, CustomService2) {
+    $scope.name = "王辉阳"
+    console.log(CustomService)
+    console.log(CustomService2)
+
+}]).controller("siblingController1", ["$scope", "Data", function($scope, Data) {
+    $scope.Data = Data;
+}]).controller("siblingController2", ["$scope", "Data", function($scope, Data) {
+    $scope.Data = Data;
+}])
+</script>
+
+</html>
