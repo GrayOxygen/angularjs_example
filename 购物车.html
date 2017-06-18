@@ -67,7 +67,6 @@ body {
 <script src="https://cdn.bootcss.com/angular.js/1.6.4/angular.min.js"></script>
 <script type="text/javascript">
 angular.module("app", []).controller("cartController", ["$scope", function($scope) {
-    console.log($scope)
     $scope.carts = [{
         id: "1",
         name: "哲学入门书籍套装",
@@ -119,7 +118,7 @@ angular.module("app", []).controller("cartController", ["$scope", function($scop
     $scope.countTotalPrice = function() {
             var total = 0;
             angular.forEach($scope.carts, function(item) {
-                total += item.num * item.unitPrice;
+                total += Number.parseInt(item.num) * Number.parseInt(item.unitPrice);
             });
             return total;
         }
@@ -127,7 +126,7 @@ angular.module("app", []).controller("cartController", ["$scope", function($scop
     $scope.countTotalNum = function() {
             var total = 0;
             angular.forEach($scope.carts, function(item) {
-                total += item.num;
+                total += Number.parseInt(item.num);
             })
             return total;
         }
